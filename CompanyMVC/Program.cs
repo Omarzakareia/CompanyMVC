@@ -1,3 +1,7 @@
+using DAL.Contexts;
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
+
 namespace CompanyMVC
 {
     public class Program
@@ -6,11 +10,26 @@ namespace CompanyMVC
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+            #region Configure Services Add Services to the container
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddDbContext<CompanyDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            #endregion
+
             var app = builder.Build();
 
+            #region Update-Database
+
+            #endregion
+
+            #region Configure the HTTP request pipeline.
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -21,14 +40,14 @@ namespace CompanyMVC
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+            #endregion
 
             app.Run();
         }
