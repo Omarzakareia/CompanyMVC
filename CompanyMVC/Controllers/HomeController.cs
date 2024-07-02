@@ -1,6 +1,7 @@
-using CompanyMVC.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using CompanyMVC.ViewModels;
 using System.Diagnostics;
+
 
 namespace CompanyMVC.Controllers
 {

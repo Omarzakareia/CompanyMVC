@@ -17,7 +17,5 @@ namespace DAL.Models
         [InverseProperty("Department")]
         public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>(); // many navigational property
 
-
-
     }
 }

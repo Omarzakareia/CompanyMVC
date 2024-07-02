@@ -1,6 +1,11 @@
 using BLL.Interfaces;
 using BLL.Repositories;
+using CompanyMVC.MappingProfiles;
 using DAL.Contexts;
+using DAL.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 
@@ -27,15 +32,35 @@ namespace CompanyMVC
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            builder.Services.AddAutoMapper(M => M.AddProfile(new DepartmentProfile()));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new UserProfile()));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new RoleProfile()));
 
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(Options =>
+            {
+                Options.Password.RequireNonAlphanumeric = true;
+                Options.Password.RequireDigit = true;
+                Options.Password.RequireLowercase = true;
+                Options.Password.RequireUppercase = true;
 
+            })
+                .AddEntityFrameworkStores<CompanyDbContext>()
+                .AddDefaultTokenProviders();
+            //services.AddScoped<UserManager<ApplicationUser>>();
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(Options =>
+                {
+                    Options.LoginPath = "Account/Login";
+                    Options.AccessDeniedPath = "Home/Error";
+                });
+            builder.Services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 52428800; // 50 MB
+            });
             #endregion
 
             var app = builder.Build();
-
-            #region Update-Database
-
-            #endregion
 
             #region Configure the HTTP request pipeline.
             // Configure the HTTP request pipeline.
@@ -54,7 +79,7 @@ namespace CompanyMVC
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}");
             #endregion
 
             app.Run();
