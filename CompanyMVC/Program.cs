@@ -1,3 +1,5 @@
+using BLL.Interfaces;
+using BLL.Repositories;
 using DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
@@ -20,6 +22,12 @@ namespace CompanyMVC
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
 
             #endregion
 
